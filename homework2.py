@@ -110,3 +110,9 @@ for x in range(6):
   print(x)
 else:
   print("Finally finished!")
+
+age = [15, 14, 19]
+name = ["Mike", "Kate", "John"]
+for x in age:
+  for y in name:
+    print(x, y)
