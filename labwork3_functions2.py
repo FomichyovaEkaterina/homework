@@ -79,19 +79,19 @@ movies = [
 ]
 
 #Task1
-def is_imdb_above_5_5(movie):
+def above_5_5(movie):
     return movie["imdb"] > 5.5
 #Task2
-def filter_movies_by_imdb(movies):
+def filter(movies):
     return [movie for movie in movies if movie["imdb"] > 5.5]
 #Task3
-def get_movies_by_category(movies, category):
+def category(movies, category):
     return [movie for movie in movies if movie["category"] == category]
 #Task4
-def average_imdb_score(movies):
+def average(movies):
     total_score = sum(movie["imdb"] for movie in movies)
     return total_score / len(movies)
 #Task5
-def average_imdb_score_by_category(movies, category):
-    filtered_movies = get_movies_by_category(movies, category)
-    return average_imdb_score(filtered_movies)
+def average_by_category(movies, category):
+    filtered_movies = category(movies, category)
+    return average(filtered_movies)
