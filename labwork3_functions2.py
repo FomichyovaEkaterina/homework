@@ -86,11 +86,9 @@ def filter_movies_by_imdb(movies):
     return [movie for movie in movies if movie["imdb"] > 5.5]
 #Task3
 def get_movies_by_category(movies, category):
-    return [movie for movie in movies if movie["category"].lower() == category.lower()]
+    return [movie for movie in movies if movie["category"] == category]
 #Task4
 def average_imdb_score(movies):
-    if not movies:
-        return 0
     total_score = sum(movie["imdb"] for movie in movies)
     return total_score / len(movies)
 #Task5
