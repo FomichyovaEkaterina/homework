@@ -5,7 +5,6 @@ def square_generator(N):
 N = int(input())
 for square in square_generator(N):
     print(square, end=" ")
-print()
 
 #Task2
 def even_generator(N):
