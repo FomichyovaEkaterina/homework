@@ -1,36 +1,43 @@
-import pygame
+import pygame, sys
 import random
 
-
+# Инициализация
 pygame.init()
+
+# Параметры окна
 WIDTH, HEIGHT = 500, 500
 CELL_SIZE = 20
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Snake")
+
+# Цвета
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+RED   = (255, 0, 0)
 BLACK = (0, 0, 0)
 
 
 class Snake:
     def __init__(self):
-        self.body = [(WIDTH // 2, HEIGHT // 2)]  # Начальная позиция змейки
-        self.direction = (CELL_SIZE, 0)  # Двигается вправо
-        self.grow = False  # Флаг для роста змейки
+        self.body = [(WIDTH // 2, HEIGHT // 2)]
+        self.direction = (CELL_SIZE, 0)
+        self.grow = False
 
     def move(self):
         head_x, head_y = self.body[0]
         dx, dy = self.direction
         new_head = (head_x + dx, head_y + dy)
-        if new_head[0] < 0 or new_head[0] >= WIDTH or new_head[1] < 0 or new_head[1] >= HEIGHT:
-            return
-        if new_head in self.body:
-            return
 
-        self.body.insert(0, new_head)  # Добавляем новую голову
+        # Проверка на столкновение со стеной или собой
+        if new_head[0] < 0 or new_head[0] >= WIDTH or new_head[1] < 0 or new_head[1] >= HEIGHT:
+            self.game_over()
+        if new_head in self.body:
+            self.game_over()
+
+        self.body.insert(0, new_head)
         if not self.grow:
-            self.body.pop()  # Если не растём, убираем хвост
+            self.body.pop()
         else:
             self.grow = False
 
@@ -42,6 +49,11 @@ class Snake:
     def draw(self):
         for segment in self.body:
             pygame.draw.rect(screen, GREEN, (*segment, CELL_SIZE, CELL_SIZE))
+
+    def game_over(self):
+        pygame.quit()
+        sys.exit()
+
 
 class Food:
     def __init__(self, snake):
@@ -57,6 +69,11 @@ class Food:
     def draw(self):
         pygame.draw.rect(screen, RED, (*self.position, CELL_SIZE, CELL_SIZE))
 
+    def respawn(self, snake):
+        self.position = self.generate_food_position(snake)
+
+
+# Создание объектов
 snake = Snake()
 food = Food(snake)
 
@@ -64,9 +81,10 @@ score = 0
 level = 1
 speed = 5
 
-running = True
 clock = pygame.time.Clock()
+running = True
 
+# Игровой цикл
 while running:
     screen.fill(WHITE)
 
@@ -84,28 +102,31 @@ while running:
             elif event.key == pygame.K_RIGHT:
                 snake.change_direction((CELL_SIZE, 0))
 
-    # Двигаем змейку
     snake.move()
 
-    # Проверка на съедение еды
-    if snake.body[0] == food.position:
+    # Проверка коллизии головы змеи с едой
+    snake_head_rect = pygame.Rect(*snake.body[0], CELL_SIZE, CELL_SIZE)
+    food_rect = pygame.Rect(*food.position, CELL_SIZE, CELL_SIZE)
+
+    if snake_head_rect.colliderect(food_rect):
         snake.grow = True
-        food = Food(snake)
+        food.respawn(snake)
         score += 1
         if score % 3 == 0:
             level += 1
             speed += 1
+
     snake.draw()
     food.draw()
 
-    # Отображение счета и уровня
+    # Отображение счёта и уровня
     font = pygame.font.Font(None, 36)
     score_text = font.render(f"Score: {score}", True, BLACK)
     level_text = font.render(f"Level: {level}", True, BLACK)
     screen.blit(score_text, (10, 10))
     screen.blit(level_text, (10, 40))
 
-    pygame.display.update()  # Обновляем экран
-    clock.tick(speed)  # Контролируем скорость
+    pygame.display.update()
+    clock.tick(speed)
 
 pygame.quit()
